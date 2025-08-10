@@ -1,20 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Leaf, User, Mail, Phone, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [signupForm, setSignupForm] = useState({ fullName: '', email: '', phone: '', password: '' });
+  
+  const { user, signIn, signUp } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Authentication logic will be implemented with Supabase
-    setTimeout(() => setIsLoading(false), 1000);
+    
+    const { error } = await signIn(loginForm.email, loginForm.password);
+    
+    if (!error) {
+      navigate('/dashboard');
+    }
+    
+    setIsLoading(false);
+  };
+
+  const handleSignupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    const { error } = await signUp(
+      signupForm.email, 
+      signupForm.password, 
+      signupForm.fullName, 
+      signupForm.phone
+    );
+    
+    setIsLoading(false);
   };
 
   return (
@@ -45,16 +78,18 @@ const Auth = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleLoginSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email or Phone</Label>
+                    <Label htmlFor="email">Email</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="email"
                         type="email"
-                        placeholder="Enter your email or phone"
+                        placeholder="Enter your email"
                         className="pl-10"
+                        value={loginForm.email}
+                        onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                         required
                       />
                     </div>
@@ -68,6 +103,8 @@ const Auth = () => {
                         type="password"
                         placeholder="Enter your password"
                         className="pl-10"
+                        value={loginForm.password}
+                        onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                         required
                       />
                     </div>
@@ -94,7 +131,7 @@ const Auth = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSignupSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="fullname">Full Name</Label>
                     <div className="relative">
@@ -103,6 +140,8 @@ const Auth = () => {
                         id="fullname"
                         placeholder="Enter your full name"
                         className="pl-10"
+                        value={signupForm.fullName}
+                        onChange={(e) => setSignupForm({ ...signupForm, fullName: e.target.value })}
                         required
                       />
                     </div>
@@ -116,6 +155,8 @@ const Auth = () => {
                         type="email"
                         placeholder="Enter your email"
                         className="pl-10"
+                        value={signupForm.email}
+                        onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })}
                         required
                       />
                     </div>
@@ -129,6 +170,8 @@ const Auth = () => {
                         type="tel"
                         placeholder="Enter your phone number"
                         className="pl-10"
+                        value={signupForm.phone}
+                        onChange={(e) => setSignupForm({ ...signupForm, phone: e.target.value })}
                         required
                       />
                     </div>
@@ -142,6 +185,8 @@ const Auth = () => {
                         type="password"
                         placeholder="Create a password"
                         className="pl-10"
+                        value={signupForm.password}
+                        onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
                         required
                       />
                     </div>
