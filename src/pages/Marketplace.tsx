@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Phone, Plus, Filter } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Marketplace = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
@@ -200,6 +201,25 @@ const Marketplace = () => {
                       <Button size="sm" className="flex-1" disabled={!product.inStock}>
                         <Phone className="h-4 w-4 mr-2" />
                         Contact Seller
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="default" 
+                        className="flex-1"
+                        disabled={!product.inStock}
+                        onClick={() => navigate("/checkout", { 
+                          state: { 
+                            product: {
+                              id: product.id,
+                              name: product.name,
+                              price: product.price,
+                              unit: product.unit,
+                              seller: product.seller
+                            }
+                          } 
+                        })}
+                      >
+                        Buy Now
                       </Button>
                     </div>
                   </div>
