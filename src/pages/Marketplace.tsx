@@ -16,14 +16,14 @@ const Marketplace = () => {
   const products = [
     {
       id: 1,
-      name: "Fresh Maize",
-      price: "GH₵ 5.50",
+      name: "Premium Fresh Maize",
+      price: "GH₵ 6.50",
       unit: "per kg",
       location: "Kumasi, Ashanti",
-      seller: "John Farmer",
+      seller: "John's Farm Fresh",
       phone: "+233 244 123 456",
       category: "cereals",
-      description: "High quality yellow maize, freshly harvested",
+      description: "Premium quality yellow maize, freshly harvested and naturally dried",
       image: "/images/marketplace/maize.jpg",
       inStock: true
     },
@@ -81,11 +81,11 @@ const Marketplace = () => {
     },
     {
       id: 6,
-      name: "Premium Jasmine Rice",
-      price: "GH₵ 8.50",
+      name: "Premium Ghana Rice",
+      price: "GH₵ 9.00",
       unit: "per kg",
       location: "Bolgatanga, Upper East",
-      seller: "Abdul's Quality Grains",
+      seller: "Abdul's Premium Grains",
       phone: "+233 244 555 123",
       category: "cereals",
       description: "High-quality jasmine rice, locally grown and carefully processed",
