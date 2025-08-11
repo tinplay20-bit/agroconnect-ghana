@@ -16,7 +16,7 @@ const Marketplace = () => {
   const products = [
     {
       id: 1,
-      name: "Fres Maize",
+      name: "Fresh Maize",
       price: "GH₵ 5.50",
       unit: "per kg",
       location: "Kumasi, Ashanti",
@@ -81,14 +81,14 @@ const Marketplace = () => {
     },
     {
       id: 6,
-      name: "Local Rice",
-      price: "GH₵ 7.80",
+      name: "Premium Jasmine Rice",
+      price: "GH₵ 8.50",
       unit: "per kg",
       location: "Bolgatanga, Upper East",
-      seller: "Abdul Grains",
+      seller: "Abdul's Quality Grains",
       phone: "+233 244 555 123",
       category: "cereals",
-      description: "Premium local rice, well cleaned",
+      description: "High-quality jasmine rice, locally grown and carefully processed",
       image: "/images/marketplace/rice.jpg",
       inStock: true
     }
