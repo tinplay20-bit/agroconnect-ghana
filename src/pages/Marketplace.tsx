@@ -24,7 +24,7 @@ const Marketplace = () => {
       phone: "+233 244 123 456",
       category: "cereals",
       description: "High quality yellow maize, freshly harvested",
-      image: "/placeholder.svg",
+      image: "/images/marketplace/maize.jpg",
       inStock: true
     },
     {
@@ -37,7 +37,7 @@ const Marketplace = () => {
       phone: "+233 244 789 123",
       category: "vegetables",
       description: "Organic tomatoes, perfect for cooking",
-      image: "/placeholder.svg",
+      image: "/images/marketplace/tomatoes.jpg",
       inStock: true
     },
     {
@@ -50,7 +50,7 @@ const Marketplace = () => {
       phone: "+233 244 456 789",
       category: "tubers",
       description: "Fresh cassava tubers, ideal for processing",
-      image: "/placeholder.svg",
+      image: "/images/marketplace/cassava.jpg",
       inStock: false
     },
     {
@@ -63,7 +63,7 @@ const Marketplace = () => {
       phone: "+233 244 321 654",
       category: "livestock",
       description: "Healthy free-range chickens",
-      image: "/placeholder.svg",
+      image: "/images/marketplace/chicken.jpg",
       inStock: true
     },
     {
@@ -76,7 +76,7 @@ const Marketplace = () => {
       phone: "+233 244 987 654",
       category: "fruits",
       description: "Sweet plantain bunches, ready to eat",
-      image: "/placeholder.svg",
+      image: "/images/marketplace/plantain.jpg",
       inStock: true
     },
     {
@@ -89,7 +89,7 @@ const Marketplace = () => {
       phone: "+233 244 555 123",
       category: "cereals",
       description: "Premium local rice, well cleaned",
-      image: "/placeholder.svg",
+      image: "/images/marketplace/rice.jpg",
       inStock: true
     }
   ];
@@ -162,11 +162,14 @@ const Marketplace = () => {
           {filteredProducts.map((product) => (
             <Card key={product.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
-                <div className="aspect-video bg-muted rounded-lg mb-3 flex items-center justify-center">
+                <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
                   <img 
                     src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover rounded-lg"
+                    alt={`${product.name} - ${product.location}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }}
                   />
                 </div>
                 <div className="flex justify-between items-start">
