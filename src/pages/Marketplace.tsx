@@ -16,7 +16,7 @@ const Marketplace = () => {
   const products = [
     {
       id: 1,
-      name: "Fresh Maize",
+      name: "Fres Maize",
       price: "GH₵ 5.50",
       unit: "per kg",
       location: "Kumasi, Ashanti",
