@@ -3,13 +3,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Calendar, User, BookOpen, Droplets, Bug, Sprout, Sun } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Search, Calendar, User, BookOpen } from "lucide-react";
+import { farmingArticles, categories } from "@/data/farmingArticles";
 
 const FarmingTips = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-
-  // Mock data - will be replaced with real data from Supabase
   const farmingTips = [
     {
       id: 1,
