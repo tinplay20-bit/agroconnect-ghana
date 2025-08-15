@@ -85,25 +85,39 @@ const AddProduct = () => {
   const uploadImage = async (file: File): Promise<string | null> => {
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `product-images/${fileName}`;
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = fileName; // Remove folder path, store directly in bucket
+
+      console.log('Uploading to bucket: product-images, path:', filePath);
 
       const { error: uploadError } = await supabase.storage
         .from('product-images')
         .upload(filePath, file);
 
       if (uploadError) {
-        throw uploadError;
+        console.error('Storage upload error:', uploadError);
+        toast({
+          title: "Upload Failed",
+          description: uploadError.message || "Failed to upload image",
+          variant: "destructive"
+        });
+        return null;
       }
 
       const { data } = supabase.storage
         .from('product-images')
         .getPublicUrl(filePath);
 
+      console.log('Upload successful, public URL:', data.publicUrl);
       return data.publicUrl;
     } catch (error) {
       console.error('Error uploading image:', error);
-      throw error;
+      toast({
+        title: "Upload Error",
+        description: "An unexpected error occurred during upload",
+        variant: "destructive"
+      });
+      return null;
     }
   };
 
