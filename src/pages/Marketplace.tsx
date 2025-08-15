@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,102 +7,69 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Phone, Plus, Filter } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description: string | null;
+  category: string;
+  location: string;
+  contact_info: string | null;
+  image_url: string | null;
+  user_id: string;
+  created_at: string;
+}
 
 const Marketplace = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-
-  // Mock data - will be replaced with real data from Supabase
-  const products = [
-    {
-      id: 1,
-      name: "Premium Fresh Maize",
-      price: "GH₵ 6.50",
-      unit: "per kg",
-      location: "Kumasi, Ashanti",
-      seller: "John's Farm Fresh",
-      phone: "+233 244 123 456",
-      category: "cereals",
-      description: "Premium quality yellow maize, freshly harvested and naturally dried",
-      image: "/images/marketplace/maize.jpg",
-      inStock: true
-    },
-    {
-      id: 2,
-      name: "Organic Tomatoes",
-      price: "GH₵ 8.00",
-      unit: "per kg",
-      location: "Accra, Greater Accra",
-      seller: "Mary Vegetables",
-      phone: "+233 244 789 123",
-      category: "vegetables",
-      description: "Organic tomatoes, perfect for cooking",
-      image: "/images/marketplace/tomatoes.jpg",
-      inStock: true
-    },
-    {
-      id: 3,
-      name: "Cassava Tubers",
-      price: "GH₵ 3.20",
-      unit: "per kg",
-      location: "Cape Coast, Central",
-      seller: "Samuel Roots",
-      phone: "+233 244 456 789",
-      category: "tubers",
-      description: "Fresh cassava tubers, ideal for processing",
-      image: "/images/marketplace/cassava.jpg",
-      inStock: false
-    },
-    {
-      id: 4,
-      name: "Free Range Chicken",
-      price: "GH₵ 45.00",
-      unit: "each",
-      location: "Tamale, Northern",
-      seller: "Ibrahim Poultry",
-      phone: "+233 244 321 654",
-      category: "livestock",
-      description: "Healthy free-range chickens",
-      image: "/images/marketplace/chicken.jpg",
-      inStock: true
-    },
-    {
-      id: 5,
-      name: "Plantain Bunches",
-      price: "GH₵ 12.00",
-      unit: "per bunch",
-      location: "Takoradi, Western",
-      seller: "Grace Fruits",
-      phone: "+233 244 987 654",
-      category: "fruits",
-      description: "Sweet plantain bunches, ready to eat",
-      image: "/images/marketplace/plantain.jpg",
-      inStock: true
-    },
-    {
-      id: 6,
-      name: "Premium Ghana Rice",
-      price: "GH₵ 9.00",
-      unit: "per kg",
-      location: "Bolgatanga, Upper East",
-      seller: "Abdul's Premium Grains",
-      phone: "+233 244 555 123",
-      category: "cereals",
-      description: "High-quality jasmine rice, locally grown and carefully processed",
-      image: "/images/marketplace/rice.jpg",
-      inStock: true
-    }
-  ];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const categories = [
     { value: "all", label: "All Categories" },
-    { value: "cereals", label: "Cereals" },
-    { value: "vegetables", label: "Vegetables" },
-    { value: "fruits", label: "Fruits" },
-    { value: "tubers", label: "Tubers" },
-    { value: "livestock", label: "Livestock" }
+    { value: "Fruits", label: "Fruits" },
+    { value: "Vegetables", label: "Vegetables" },
+    { value: "Grains", label: "Grains" },
+    { value: "Livestock", label: "Livestock" },
+    { value: "Dairy", label: "Dairy" },
+    { value: "Seeds", label: "Seeds" },
+    { value: "Tools", label: "Tools" },
+    { value: "Other", label: "Other" }
   ];
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load products. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -109,6 +77,17 @@ const Marketplace = () => {
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading marketplace...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -164,7 +143,7 @@ const Marketplace = () => {
               <CardHeader className="pb-3">
                 <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
                   <img 
-                    src={product.image} 
+                    src={product.image_url || "/placeholder.svg"} 
                     alt={`${product.name} - ${product.location}`}
                     className="w-full h-full object-cover"
                     loading="lazy"
@@ -174,22 +153,17 @@ const Marketplace = () => {
                 </div>
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-lg">{product.name}</CardTitle>
-                  <Badge variant={product.inStock ? "default" : "secondary"}>
-                    {product.inStock ? "In Stock" : "Sold Out"}
-                  </Badge>
+                  <Badge variant="default">Available</Badge>
                 </div>
                 <CardDescription className="line-clamp-2">
-                  {product.description}
+                  {product.description || "No description available"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-2xl font-bold text-primary">
-                      {product.price}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {product.unit}
+                      GH₵ {product.price.toFixed(2)}
                     </span>
                   </div>
                   
@@ -199,25 +173,27 @@ const Marketplace = () => {
                   </div>
                   
                   <div className="pt-2 border-t">
-                    <p className="text-sm font-medium mb-2">Seller: {product.seller}</p>
+                    {product.contact_info && (
+                      <p className="text-sm mb-2">Contact: {product.contact_info}</p>
+                    )}
                     <div className="flex gap-2">
-                      <Button size="sm" className="flex-1" disabled={!product.inStock}>
-                        <Phone className="h-4 w-4 mr-2" />
-                        Contact Seller
-                      </Button>
+                      {product.contact_info && (
+                        <Button size="sm" className="flex-1">
+                          <Phone className="h-4 w-4 mr-2" />
+                          Contact Seller
+                        </Button>
+                      )}
                       <Button 
                         size="sm" 
                         variant="default" 
                         className="flex-1"
-                        disabled={!product.inStock}
                         onClick={() => navigate("/checkout", { 
                           state: { 
                             product: {
                               id: product.id,
                               name: product.name,
-                              price: product.price,
-                              unit: product.unit,
-                              seller: product.seller
+                              price: `GH₵ ${product.price.toFixed(2)}`,
+                              seller: "Seller"
                             }
                           } 
                         })}
@@ -232,7 +208,7 @@ const Marketplace = () => {
           ))}
         </div>
 
-        {filteredProducts.length === 0 && (
+        {filteredProducts.length === 0 && !loading && (
           <div className="text-center py-12">
             <p className="text-muted-foreground mb-4">
               No products found matching your search criteria.
